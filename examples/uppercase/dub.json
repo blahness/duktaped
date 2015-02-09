@@ -1,0 +1,9 @@
+{
+	"name": "uppercase",
+	"description": "Duktape api example.",
+	"license": "MIT",
+        "targetType": "executable",
+        "dependencies": {
+		"duktape": "*"
+	}
+}

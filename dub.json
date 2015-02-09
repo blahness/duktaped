@@ -1,0 +1,15 @@
+{
+    "name": "duktape",
+    "description": "An embeddable Javascript engine, with a focus on portability and compact footprint.",
+    "homepage": "http://duktape.org",
+    "license": "MIT",
+    "targetType": "sourceLibrary",
+    "sourceFiles-windows-x86_64-dmd": ["bin/duktape.obj"],
+    "sourceFiles-linux-x86_64": ["bin/duktape.o"],
+    "subPackages": [
+        "examples/module",
+        "examples/primecheck",
+        "examples/processlines",
+        "examples/uppercase",
+    ]
+}
