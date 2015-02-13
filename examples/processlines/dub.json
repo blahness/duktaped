@@ -1,9 +1,9 @@
 {
-	"name": "processlines",
-	"description": "Duktape api example.",
-	"license": "MIT",
+    "name": "processlines",
+    "description": "Duktape api example.",
+    "license": "MIT",
     "targetType": "executable",
     "dependencies": {
-		"duktape": "*"
-	}
+        "duktape": "*"
+    }
 }

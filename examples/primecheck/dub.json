@@ -1,9 +1,9 @@
 {
-	"name": "primecheck",
-	"description": "Duktape api example.",
-	"license": "MIT",
+    "name": "primecheck",
+    "description": "Duktape api example.",
+    "license": "MIT",
     "targetType": "executable",
     "dependencies": {
-		"duktape": "*"
-	}
+        "duktape": "*"
+    }
 }
