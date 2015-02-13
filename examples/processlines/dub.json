@@ -3,6 +3,7 @@
     "description": "Duktape api example.",
     "license": "MIT",
     "targetType": "executable",
+    "workingDirectory": "./",
     "dependencies": {
         "duktape": "*"
     }
