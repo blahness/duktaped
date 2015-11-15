@@ -2,7 +2,9 @@ import std.c.stdarg;
 import std.string;
 import std.stdint;
 
-enum DUK_VERSION = 10100L;
+enum DUK_VERSION = 10300L;
+
+enum DUK_DEBUG_PROTOCOL_VERSION = 1;
 
 /* Basic types */
 alias duk_int_t   = int;
@@ -60,6 +62,12 @@ extern(C) {
     alias duk_decode_char_function = void function(void *udata, duk_codepoint_t codepoint);
     alias duk_map_char_function = duk_codepoint_t function(void *udata, duk_codepoint_t codepoint);
     alias duk_safe_call_function = duk_ret_t function(duk_context *ctx);
+    alias duk_debug_read_function = duk_size_t function(void *udata, char *buffer, duk_size_t length);
+    alias duk_debug_write_function = duk_size_t function(void *udata, const char *buffer, duk_size_t length);
+    alias duk_debug_peek_function = duk_size_t function(void *udata);
+    alias duk_debug_read_flush_function = void function(void *udata);
+    alias duk_debug_write_flush_function = void function(void *udata);
+    alias duk_debug_detached_function = void function(void *udata);
 }
 
 struct duk_memory_functions {
@@ -195,16 +203,24 @@ duk_context *duk_create_heap_default() {
  *  Push operations
  */
 
+enum DUK_BUF_FLAG_DYNAMIC   = (1 << 0);    /* internal flag: dynamic buffer */
+enum DUK_BUF_FLAG_EXTERNAL  = (1 << 1);    /* internal flag: external buffer */
+enum DUK_BUF_FLAG_NOZERO    = (1 << 2);   /* internal flag: don't zero allocated buffer */
+
 void *duk_push_buffer(duk_context *ctx, duk_size_t size, duk_bool_t dynamic) {
-    return duk_push_buffer_raw(ctx, size, dynamic);
+    return duk_push_buffer_raw(ctx, size, dynamic ? DUK_BUF_FLAG_DYNAMIC : 0);
 }
 
 void *duk_push_fixed_buffer(duk_context *ctx, duk_size_t size) {
-    return duk_push_buffer_raw(ctx, size, 0 /*dynamic*/);
+    return duk_push_buffer_raw(ctx, size, 0 /*flags*/);
 }
 
 void *duk_push_dynamic_buffer(duk_context *ctx, duk_size_t size) {
-    return duk_push_buffer_raw(ctx, size, 1 /*dynamic*/);
+    return duk_push_buffer_raw(ctx, size, DUK_BUF_FLAG_DYNAMIC /*flags*/);
+}
+
+void duk_push_external_buffer(duk_context *ctx) {
+    duk_push_buffer_raw(ctx, 0, DUK_BUF_FLAG_DYNAMIC | DUK_BUF_FLAG_EXTERNAL);
 }
 
 duk_idx_t duk_push_error_object(duk_context *ctx, duk_errcode_t err_code, const char *fmt, ...) {
@@ -510,12 +526,23 @@ extern (C) {
     void duk_compact(duk_context *ctx, duk_idx_t obj_index);
     duk_int_t duk_compile_raw(duk_context *ctx, const char *src_buffer, duk_size_t src_length, duk_uint_t flags);
     void duk_concat(duk_context *ctx, duk_idx_t count);
+    void duk_config_buffer(duk_context *ctx, duk_idx_t index, void *ptr, duk_size_t len);
     void duk_copy(duk_context *ctx, duk_idx_t from_index, duk_idx_t to_index);
     duk_context *duk_create_heap(duk_alloc_function alloc_func,
                                  duk_realloc_function realloc_func,
                                  duk_free_function free_func,
                                  void *heap_udata,
                                  duk_fatal_function fatal_handler);
+    void duk_debugger_attach(duk_context *ctx,
+                             duk_debug_read_function read_cb,
+                             duk_debug_write_function write_cb,
+                             duk_debug_peek_function peek_cb,
+                             duk_debug_read_flush_function read_flush_cb,
+                             duk_debug_write_flush_function write_flush_cb,
+                             duk_debug_detached_function detached_cb,
+                             void *udata);
+    void duk_debugger_cooperate(duk_context *ctx);
+    void duk_debugger_detach(duk_context *ctx);
     void duk_decode_string(duk_context *ctx, duk_idx_t index, duk_decode_char_function callback, void *udata);
     void duk_def_prop(duk_context *ctx, duk_idx_t obj_index, duk_uint_t flags);
     duk_bool_t duk_del_prop(duk_context *ctx, duk_idx_t obj_index);
@@ -524,6 +551,7 @@ extern (C) {
     void duk_destroy_heap(duk_context *ctx);
     void duk_dump_context_stderr(duk_context *ctx);
     void duk_dump_context_stdout(duk_context *ctx);
+    void duk_dump_function(duk_context *ctx);
     void duk_dup(duk_context *ctx, duk_idx_t from_index);
     void duk_dup_top(duk_context *ctx);
     void duk_enum(duk_context *ctx, duk_idx_t obj_index, duk_uint_t enum_flags);
@@ -537,6 +565,7 @@ extern (C) {
     void duk_gc(duk_context *ctx, duk_uint_t flags);
     duk_bool_t duk_get_boolean(duk_context *ctx, duk_idx_t index);
     void *duk_get_buffer(duk_context *ctx, duk_idx_t index, duk_size_t *out_size);
+    void *duk_get_buffer_data(duk_context *ctx, duk_idx_t index, duk_size_t *out_size);
     duk_c_function duk_get_c_function(duk_context *ctx, duk_idx_t index);
     duk_context *duk_get_context(duk_context *ctx, duk_idx_t index);
     duk_int_t duk_get_current_magic(duk_context *ctx);
@@ -567,6 +596,7 @@ extern (C) {
     void duk_hex_decode(duk_context *ctx, duk_idx_t index);
     const(char) *duk_hex_encode(duk_context *ctx, duk_idx_t index);
     void duk_insert(duk_context *ctx, duk_idx_t to_index);
+    duk_bool_t duk_instanceof(duk_context *ctx, duk_idx_t index1, duk_idx_t index2);
     duk_bool_t duk_is_array(duk_context *ctx, duk_idx_t index);
     duk_bool_t duk_is_boolean(duk_context *ctx, duk_idx_t index);
     duk_bool_t duk_is_bound_function(duk_context *ctx, duk_idx_t index);
@@ -594,6 +624,7 @@ extern (C) {
     void duk_join(duk_context *ctx, duk_idx_t count);
     void duk_json_decode(duk_context *ctx, duk_idx_t index);
     const(char) *duk_json_encode(duk_context *ctx, duk_idx_t index);
+    void duk_load_function(duk_context *ctx);
     void duk_log(duk_context *ctx, duk_int_t level, const char *fmt, ...);
     void duk_log_va(duk_context *ctx, duk_int_t level, const char *fmt, va_list ap);
     void duk_map_string(duk_context *ctx, duk_idx_t index, duk_map_char_function callback, void *udata);
@@ -603,12 +634,14 @@ extern (C) {
     duk_int_t duk_pcall(duk_context *ctx, duk_idx_t nargs);
     duk_int_t duk_pcall_method(duk_context *ctx, duk_idx_t nargs);
     duk_int_t duk_pcall_prop(duk_context *ctx, duk_idx_t obj_index, duk_idx_t nargs);
+    duk_ret_t duk_pnew(duk_context *ctx, duk_idx_t nargs);
     void duk_pop(duk_context *ctx);
     void duk_pop_2(duk_context *ctx);
     void duk_pop_3(duk_context *ctx);
     void duk_pop_n(duk_context *ctx, duk_idx_t count);
     duk_idx_t duk_push_array(duk_context *ctx);
     void duk_push_boolean(duk_context *ctx, duk_bool_t val);
+    void duk_push_buffer_object(duk_context *ctx, duk_idx_t idx_buffer, duk_size_t byte_offset, duk_size_t byte_length, duk_uint_t flags);
     void *duk_push_buffer_raw(duk_context *ctx, duk_size_t size, duk_bool_t dynamic);
     duk_idx_t duk_push_c_function(duk_context *ctx, duk_c_function func, duk_idx_t nargs);
     duk_idx_t duk_push_c_lightfunc(duk_context *ctx, duk_c_function func, duk_idx_t nargs, duk_idx_t length, duk_int_t magic);
@@ -651,6 +684,7 @@ extern (C) {
     void duk_replace(duk_context *ctx, duk_idx_t to_index);
     duk_bool_t duk_require_boolean(duk_context *ctx, duk_idx_t index);
     void *duk_require_buffer(duk_context *ctx, duk_idx_t index, duk_size_t *out_size);
+    void *duk_require_buffer_data(duk_context *ctx, duk_idx_t index, duk_size_t *out_size);
     duk_c_function duk_require_c_function(duk_context *ctx, duk_idx_t index);
     duk_context *duk_require_context(duk_context *ctx, duk_idx_t index);
     void *duk_require_heapptr(duk_context *ctx, duk_idx_t index);
@@ -675,6 +709,7 @@ extern (C) {
     void duk_set_magic(duk_context *ctx, duk_idx_t index, duk_int_t magic);
     void duk_set_prototype(duk_context *ctx, duk_idx_t index);
     void duk_set_top(duk_context *ctx, duk_idx_t index);
+    void *duk_steal_buffer(duk_context *ctx, duk_idx_t index, duk_size_t *out_size);
     duk_bool_t duk_strict_equals(duk_context *ctx, duk_idx_t index1, duk_idx_t index2);
     void duk_substring(duk_context *ctx, duk_idx_t index, duk_size_t start_char_offset, duk_size_t end_char_offset);
     void duk_swap(duk_context *ctx, duk_idx_t index1, duk_idx_t index2);

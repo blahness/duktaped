@@ -1,0 +1,9 @@
+{
+    "name": "console",
+    "description": "Duktape api example.",
+    "license": "MIT",
+    "targetType": "executable",
+    "dependencies": {
+        "duktape": "*"
+    }
+}

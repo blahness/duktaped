@@ -2,10 +2,10 @@
 
 ### Notes ###
 
-This has been used/tested with Duktape 1.1.x on:
+This has been used/tested with Duktape 1.3.x on:
 
-* Ubuntu 14.04 x64
-* Windows 7 x64
+* Ubuntu 14.10 x64
+* Windows 7 x86 & x64
 
 To run uppercase example:
 
