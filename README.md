@@ -2,7 +2,7 @@
 
 ### Notes ###
 
-This has been used/tested with Duktape 1.3.x on:
+This has been used/tested with Duktape 1.4.x on:
 
 * Ubuntu 14.10 x64
 * Windows 7 x86 & x64

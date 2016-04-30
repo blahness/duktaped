@@ -1,8 +1,8 @@
-import std.c.stdarg;
+import core.stdc.stdarg;
 import std.string;
 import std.stdint;
 
-enum DUK_VERSION = 10300L;
+enum DUK_VERSION = 10401L;
 
 enum DUK_DEBUG_PROTOCOL_VERSION = 1;
 
@@ -317,10 +317,38 @@ duk_bool_t duk_is_error(duk_context *ctx, duk_idx_t index) {
     return duk_get_error_code(ctx, index) != 0;
 }
 
+duk_bool_t duk_is_eval_error(duk_context *ctx, duk_idx_t index) {
+    return duk_get_error_code(ctx, index) == DUK_ERR_EVAL_ERROR;
+}
+
+duk_bool_t duk_is_range_error(duk_context *ctx, duk_idx_t index) {
+    return duk_get_error_code(ctx, index) == DUK_ERR_RANGE_ERROR;
+}
+
+duk_bool_t duk_is_reference_error(duk_context *ctx, duk_idx_t index) {
+    return duk_get_error_code(ctx, index) == DUK_ERR_REFERENCE_ERROR;
+}
+
+duk_bool_t duk_is_syntax_error(duk_context *ctx, duk_idx_t index) {
+    return duk_get_error_code(ctx, index) == DUK_ERR_SYNTAX_ERROR;
+}
+
+duk_bool_t duk_is_type_error(duk_context *ctx, duk_idx_t index) {
+    return duk_get_error_code(ctx, index) == DUK_ERR_TYPE_ERROR;
+}
+
+duk_bool_t duk_is_uri_error(duk_context *ctx, duk_idx_t index) {
+    return duk_get_error_code(ctx, index) == DUK_ERR_URI_ERROR;
+}
+
 /*
  *  Require operations: no coercion, throw error if index or type
  *  is incorrect.  No defaulting.
  */
+void duk_require_callable(duk_context *ctx, duk_idx_t index) {
+    duk_require_function(ctx, index);
+}
+
 void duk_require_type_mask(duk_context *ctx, duk_idx_t index, duk_uint_t mask) {
     duk_check_type_mask(ctx, index, mask | DUK_TYPE_MASK_THROW);
 }
@@ -687,6 +715,7 @@ extern (C) {
     void *duk_require_buffer_data(duk_context *ctx, duk_idx_t index, duk_size_t *out_size);
     duk_c_function duk_require_c_function(duk_context *ctx, duk_idx_t index);
     duk_context *duk_require_context(duk_context *ctx, duk_idx_t index);
+    void duk_require_function(duk_context *ctx, duk_idx_t index);
     void *duk_require_heapptr(duk_context *ctx, duk_idx_t index);
     duk_int_t duk_require_int(duk_context *ctx, duk_idx_t index);
     const(char) *duk_require_lstring(duk_context *ctx, duk_idx_t index, duk_size_t *out_len);
