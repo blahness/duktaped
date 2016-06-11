@@ -2,7 +2,7 @@ import core.stdc.stdarg;
 import std.string;
 import std.stdint;
 
-enum DUK_VERSION = 10401L;
+enum DUK_VERSION = 10500L;
 
 enum DUK_DEBUG_PROTOCOL_VERSION = 1;
 
@@ -67,6 +67,7 @@ extern(C) {
     alias duk_debug_peek_function = duk_size_t function(void *udata);
     alias duk_debug_read_flush_function = void function(void *udata);
     alias duk_debug_write_flush_function = void function(void *udata);
+    alias duk_debug_request_function = duk_idx_t function(duk_context *ctx, void *udata, duk_idx_t nvalues);
     alias duk_debug_detached_function = void function(void *udata);
 }
 
@@ -133,10 +134,11 @@ enum DUK_EXEC_ERROR =               1;
 enum DUK_COMPILE_EVAL =                  (1 << 0);    /* compile eval code (instead of program) */
 enum DUK_COMPILE_FUNCTION =              (1 << 1);    /* compile function code (instead of program) */
 enum DUK_COMPILE_STRICT =                (1 << 2);    /* use strict (outer) context for program, eval, or function */
-enum DUK_COMPILE_SAFE =                  (1 << 3);    /* (internal) catch compilation errors */
-enum DUK_COMPILE_NORESULT =              (1 << 4);    /* (internal) omit eval result */
-enum DUK_COMPILE_NOSOURCE =              (1 << 5);    /* (internal) no source string on stack */
-enum DUK_COMPILE_STRLEN =                (1 << 6);    /* (internal) take strlen() of src_buffer (avoids double evaluation in macro) */
+enum DUK_COMPILE_SAFE =                  (1 << 6);    /* (internal) catch compilation errors */
+enum DUK_COMPILE_NORESULT =              (1 << 7);    /* (internal) omit eval result */
+enum DUK_COMPILE_NOSOURCE =              (1 << 8);    /* (internal) no source string on stack */
+enum DUK_COMPILE_STRLEN =                (1 << 9);    /* (internal) take strlen() of src_buffer (avoids double evaluation in macro) */
+enum DUK_COMPILE_NOFILENAME =            (1 << 10);   /* (internal) no filename on stack */
 
 /* Flags for duk_def_prop() and its variants */
 enum DUK_DEFPROP_WRITABLE =              (1 << 0);    /* set writable (effective if DUK_DEFPROP_HAVE_WRITABLE set) */
@@ -149,6 +151,12 @@ enum DUK_DEFPROP_HAVE_VALUE =            (1 << 6);    /* set value (given on val
 enum DUK_DEFPROP_HAVE_GETTER =           (1 << 7);    /* set getter (given on value stack) */
 enum DUK_DEFPROP_HAVE_SETTER =           (1 << 8);    /* set setter (given on value stack) */
 enum DUK_DEFPROP_FORCE =                 (1 << 9);    /* force change if possible, may still fail for e.g. virtual properties */
+enum DUK_DEFPROP_SET_WRITABLE =          (DUK_DEFPROP_HAVE_WRITABLE | DUK_DEFPROP_WRITABLE);
+enum DUK_DEFPROP_CLEAR_WRITABLE =        DUK_DEFPROP_HAVE_WRITABLE;
+enum DUK_DEFPROP_SET_ENUMERABLE  =       (DUK_DEFPROP_HAVE_ENUMERABLE | DUK_DEFPROP_ENUMERABLE);
+enum DUK_DEFPROP_CLEAR_ENUMERABLE =      DUK_DEFPROP_HAVE_ENUMERABLE;
+enum DUK_DEFPROP_SET_CONFIGURABLE  =     (DUK_DEFPROP_HAVE_CONFIGURABLE | DUK_DEFPROP_CONFIGURABLE);
+enum DUK_DEFPROP_CLEAR_CONFIGURABLE =    DUK_DEFPROP_HAVE_CONFIGURABLE;
 
 /* Enumeration flags for duk_enum() */
 enum DUK_ENUM_INCLUDE_NONENUMERABLE =    (1 << 0);    /* enumerate non-numerable properties in addition to enumerable */
@@ -538,6 +546,19 @@ duk_int_t duk_pcompile_file(duk_context *ctx, duk_uint_t flags, const char *path
     return duk_compile_raw(ctx, null, 0, flags | DUK_COMPILE_SAFE);
 }
 
+/* Debugger (debug protocol) */
+void duk_debugger_attach(duk_context *ctx,
+                         duk_debug_read_function read_cb,
+                         duk_debug_write_function write_cb,
+                         duk_debug_peek_function peek_cb,
+                         duk_debug_read_flush_function read_flush_cb,
+                         duk_debug_write_flush_function write_flush_cb,
+                         duk_debug_detached_function detached_cb,
+                         void *udata) {
+    duk_debugger_attach_custom(ctx, read_cb, write_cb, peek_cb, read_flush_cb,
+        write_flush_cb, null, detached_cb, udata);
+}
+
 extern (C) {
     void *duk_alloc(duk_context *ctx, duk_size_t size);
     void *duk_alloc_raw(duk_context *ctx, duk_size_t size);
@@ -561,16 +582,19 @@ extern (C) {
                                  duk_free_function free_func,
                                  void *heap_udata,
                                  duk_fatal_function fatal_handler);
-    void duk_debugger_attach(duk_context *ctx,
-                             duk_debug_read_function read_cb,
-                             duk_debug_write_function write_cb,
-                             duk_debug_peek_function peek_cb,
-                             duk_debug_read_flush_function read_flush_cb,
-                             duk_debug_write_flush_function write_flush_cb,
-                             duk_debug_detached_function detached_cb,
-                             void *udata);
+    void duk_debugger_attach_custom(duk_context *ctx,
+                                    duk_debug_read_function read_cb,
+                                    duk_debug_write_function write_cb,
+                                    duk_debug_peek_function peek_cb,
+                                    duk_debug_read_flush_function read_flush_cb,
+                                    duk_debug_write_flush_function write_flush_cb,
+                                    duk_debug_request_function request_cb,
+                                    duk_debug_detached_function detached_cb,
+                                    void *udata);
     void duk_debugger_cooperate(duk_context *ctx);
     void duk_debugger_detach(duk_context *ctx);
+    duk_bool_t duk_debugger_notify(duk_context *ctx, duk_idx_t nvalues);
+    void duk_debugger_pause(duk_context *ctx);
     void duk_decode_string(duk_context *ctx, duk_idx_t index, duk_decode_char_function callback, void *udata);
     void duk_def_prop(duk_context *ctx, duk_idx_t obj_index, duk_uint_t flags);
     duk_bool_t duk_del_prop(duk_context *ctx, duk_idx_t obj_index);
