@@ -10,7 +10,7 @@ This has been used/tested with Duktape 1.5.x on:
 To run uppercase example:
 
 ```
-dub run duktape:uppercase --build=release --arch=x86_64 -- "this is a test"
+dub run duktape:uppercase -- "this is a test"
 ```
 
 For more information about Duktape check out its official website: [http://duktape.org/](http://duktape.org/)
