@@ -6,7 +6,11 @@
     "targetType": "library",
     "sourceFiles-windows-x86": ["bin/duktape32.obj"],
     "sourceFiles-windows-x86_64": ["bin/duktape.obj"],
-    "sourceFiles-linux-x86_64": ["bin/duktape.o"],
+
+    "preBuildCommands-linux": ["make -C $PACKAGE_DIR/c"],
+	"lflags-linux": ["-L$PACKAGE_DIR/c"],
+	"libs-linux": ["duktape"],
+
     "subPackages": [
         "examples/module",
         "examples/primecheck",
