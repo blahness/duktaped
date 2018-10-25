@@ -3,11 +3,10 @@
     "description": "D binding to Duktape, an embeddable Javascript engine, with a focus on portability and compact footprint.",
     "homepage": "http://duktape.org",
     "license": "MIT",
-    "targetType": "sourceLibrary",
+    "targetType": "library",
     "sourceFiles-windows-x86": ["bin/duktape32.obj"],
     "sourceFiles-windows-x86_64": ["bin/duktape.obj"],
     "sourceFiles-linux-x86_64": ["bin/duktape.o"],
-    "dflags-windows-x86-dmd": ["-m32mscoff"],
     "subPackages": [
         "examples/module",
         "examples/primecheck",

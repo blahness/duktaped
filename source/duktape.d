@@ -234,16 +234,10 @@ void duk_push_external_buffer(duk_context *ctx) {
 duk_idx_t duk_push_error_object(duk_context *ctx, duk_errcode_t err_code, const char *fmt, ...) {
     va_list ap;
 
-    version (X86)
-        va_start(ap, fmt);
-    else
-    version (Win64)
-        va_start(ap, fmt);
-    else
-    version (X86_64)
+    static if (is(typeof(__va_argsave)))
         va_start(ap, __va_argsave);
     else
-    static assert(0, "Platform not supported.");
+        va_start(ap, fmt);
 
     auto r =  duk_push_error_object_raw(ctx, err_code, toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
 
@@ -274,16 +268,10 @@ duk_idx_t duk_push_thread_new_globalenv(duk_context *ctx) {
 void duk_error(duk_context *ctx, duk_errcode_t err_code, const char *fmt, ...) {
     va_list ap;
 
-    version (X86)
-        va_start(ap, fmt);
-    else
-    version (Win64)
-        va_start(ap, fmt);
-    else
-    version (X86_64)
+    static if (is(typeof(__va_argsave)))
         va_start(ap, __va_argsave);
     else
-    static assert(0, "Platform not supported.");
+        va_start(ap, fmt);
 
     duk_error_raw(ctx, cast(duk_errcode_t)err_code, toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
 
