@@ -2,15 +2,21 @@
 
 ### Notes ###
 
-This has been used/tested with Duktape 1.5.x on:
+This has been used/tested with Duktape 2.3.x on:
 
-* Ubuntu 14.10 x64
+* Ubuntu 18.10 x64
 * Windows 7 x86 & x64
 
 To run uppercase example:
 
 ```
 dub run duktape:uppercase -- "this is a test"
+```
+
+On Windows you should add --arch=x86_mscoff for 32-bit builds or --arch=x86_64 for 64-bit builds because the included binary files are in COFF format.
+
+```
+dub run --arch=x86_64 duktape:uppercase -- "this is a test"
 ```
 
 For more information about Duktape check out its official website: [http://duktape.org/](http://duktape.org/)
@@ -24,6 +30,8 @@ import std.stdio;
 import std.string;
 
 import duktape;
+import duk_extras.print_alert;
+import duk_extras.v1_compat;
 
 extern (C) duk_ret_t native_prime_check(duk_context *ctx) {
     int val = duk_require_int(ctx, 0);
@@ -51,6 +59,7 @@ int main() {
     scope(exit) duk_destroy_heap(ctx);
 
     duk_push_global_object(ctx);
+    duk_print_alert_init(ctx, 0);
     duk_push_c_function(ctx, &native_prime_check, 2 /*nargs*/);
     duk_put_prop_string(ctx, -2, "primeCheckNative");
 

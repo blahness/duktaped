@@ -74,7 +74,7 @@ void main() {
             }
         }
 
-        int ret = duk_peval_lstring(ctx, line.ptr, line.length - 1);
+        int ret = duk_peval_lstring(ctx, line.ptr, cast(duk_size_t)line.length - 1);
         
         if (ret != 0) {
             writeln("Error: " ~ duk_to_string(ctx, -1).to!string);

@@ -3,6 +3,8 @@ import std.stdio;
 import std.string;
 
 import duktape;
+import duk_extras.print_alert;
+import duk_extras.v1_compat;
 
 extern (C) duk_ret_t native_prime_check(duk_context *ctx) {
     int val = duk_require_int(ctx, 0);
@@ -32,6 +34,7 @@ int main() {
     // toStringz not really needed because D literal strings are null-terminated
 
     duk_push_global_object(ctx);
+    duk_print_alert_init(ctx, 0);
     duk_push_c_function(ctx, &native_prime_check, 2 /*nargs*/);
     duk_put_prop_string(ctx, -2, "primeCheckNative".toStringz());
 

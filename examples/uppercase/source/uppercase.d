@@ -5,9 +5,9 @@ import std.string;
 import duktape;
 
 extern (C) int dummy_upper_case(duk_context *ctx) {
-    size_t sz;
+    duk_size_t sz;
     const char *val = duk_require_lstring(ctx, 0, &sz);
-    size_t i;
+    duk_size_t i;
 
     /* We're going to need 'sz' additional entries on the stack. */
     duk_require_stack(ctx, cast(duk_idx_t)sz);

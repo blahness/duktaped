@@ -3,6 +3,7 @@ import std.stdio;
 import std.string;
 
 import duktape;
+import duk_extras.v1_compat;
 
 int main() {
     duk_context *ctx = duk_create_heap_default();

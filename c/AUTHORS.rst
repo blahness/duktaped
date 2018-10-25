@@ -29,6 +29,31 @@ and agreed to irrevocably license their contributions under the Duktape
 * René Hollander <rene@rene8888.at>
 * Julien Hamaide (https://github.com/crazyjul)
 * Sebastian Götte (https://github.com/jaseg)
+* Tomasz Magulski (https://github.com/magul)
+* \D. Bohdan (https://github.com/dbohdan)
+* Ondřej Jirman (https://github.com/megous)
+* Saúl Ibarra Corretgé <saghul@gmail.com>
+* Jeremy HU <huxingyi@msn.com>
+* Ole André Vadla Ravnås (https://github.com/oleavr)
+* Harold Brenes (https://github.com/harold-b)
+* Oliver Crow (https://github.com/ocrow)
+* Jakub Chłapiński (https://github.com/jchlapinski)
+* Brett Vickers (https://github.com/beevik)
+* Dominik Okwieka (https://github.com/okitec)
+* Remko Tronçon (https://el-tramo.be)
+* Romero Malaquias (rbsm@ic.ufal.br)
+* Michael Drake <michael.drake@codethink.co.uk>
+* Steven Don (https://github.com/shdon)
+* Simon Stone (https://github.com/sstone1)
+* \J. McC. (https://github.com/jmhmccr)
+* Jakub Nowakowski (https://github.com/jimvonmoon)
+* Tommy Nguyen (https://github.com/tn0502)
+* Fabrice Fontaine (https://github.com/ffontaine)
+* Christopher Hiller (https://github.com/boneskull)
+* Gonzalo Diethelm (https://github.com/gonzus)
+* Michal Kasperek (https://github.com/michalkas)
+* Andrew Janke (https://github.com/apjanke)
+* Steve Fan (https://github.com/stevefan1999)
 
 Other contributions
 ===================
@@ -66,7 +91,9 @@ bugs, provided ideas, etc; roughly in order of appearance):
 * Michael Drake (https://github.com/tlsa)
 * https://github.com/chris-y
 * Laurent Zubiaur (https://github.com/lzubiaur)
-* Ole André Vadla Ravnås (https://github.com/oleavr)
+* Neil Kolban (https://github.com/nkolban)
+* Wilhelm Wanecek (https://github.com/wanecek)
+* Andrew Janke (https://github.com/apjanke)
 
 If you are accidentally missing from this list, send me an e-mail
 (``sami.vaarala@iki.fi``) and I'll fix the omission.

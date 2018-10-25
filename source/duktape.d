@@ -148,6 +148,8 @@ public import duk_config;
  *  (``sami.vaarala@iki.fi``) and I'll fix the omission.
  */
 
+import std.string : toStringz;
+
 extern (C):
 
 /*
@@ -506,6 +508,182 @@ void duk_error_raw (duk_context* ctx, duk_errcode_t err_code, const(char)* filen
 
 void duk_error_va_raw (duk_context* ctx, duk_errcode_t err_code, const(char)* filename, duk_int_t line, const(char)* fmt, va_list ap);
 
+duk_ret_t duk_throw(duk_context *ctx) {
+    duk_throw_raw(ctx);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_fatal(duk_context *ctx, const(char) *err_msg) {
+    duk_fatal_raw(ctx, err_msg);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_error(duk_context *ctx, duk_errcode_t err_code, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    //duk_error_raw(ctx, cast(duk_errcode_t)err_code, toStringz(__FILE__),
+    //    cast(duk_int_t)__LINE__, fmt, ap);
+    duk_error_va_raw(ctx, cast(duk_errcode_t)err_code, toStringz(__FILE__),
+        cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t  duk_error_va(duk_context *ctx, duk_errcode_t err_code, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)err_code, toStringz(__FILE__),
+        cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0; 
+}
+
+duk_ret_t duk_eval_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_EVAL_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_eval_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_EVAL_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
+
+duk_ret_t duk_generic_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_generic_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_range_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_RANGE_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_range_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_RANGE_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_reference_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_REFERENCE_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_reference_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_REFERENCE_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
+
+duk_ret_t duk_syntax_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_SYNTAX_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_syntax_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_SYNTAX_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_type_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_TYPE_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_type_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_TYPE_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_uri_error(duk_context *ctx, const(char) *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_URI_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    va_end(ap);
+
+    return cast(duk_ret_t)0;
+}
+
+duk_ret_t duk_uri_error_va(duk_context *ctx, const(char) *fmt, va_list ap) {
+    duk_error_va_raw(ctx, cast(duk_errcode_t)DUK_ERR_URI_ERROR,
+        toStringz(__FILE__), cast(duk_int_t)__LINE__, fmt, ap);
+
+    return cast(duk_ret_t)0;
+}
+
 /*
  *  Other state related functions
  */
@@ -634,6 +812,22 @@ enum DUK_BUF_FLAG_EXTERNAL = 1 << 1; /* internal flag: external buffer */
 enum DUK_BUF_FLAG_NOZERO = 1 << 2; /* internal flag: don't zero allocated buffer */
 
 void* duk_push_buffer_raw (duk_context* ctx, duk_size_t size, duk_small_uint_t flags);
+
+void *duk_push_buffer(duk_context *ctx, duk_size_t size, duk_bool_t dynamic) {
+    return duk_push_buffer_raw(ctx, size, dynamic ? DUK_BUF_FLAG_DYNAMIC : 0);
+}
+
+void *duk_push_fixed_buffer(duk_context *ctx, duk_size_t size) {
+    return duk_push_buffer_raw(ctx, size, 0 /*flags*/);
+}
+
+void *duk_push_dynamic_buffer(duk_context *ctx, duk_size_t size) {
+    return duk_push_buffer_raw(ctx, size, DUK_BUF_FLAG_DYNAMIC /*flags*/);
+}
+
+void duk_push_external_buffer(duk_context *ctx) {
+    duk_push_buffer_raw(ctx, 0, DUK_BUF_FLAG_DYNAMIC | DUK_BUF_FLAG_EXTERNAL);
+}
 
 /*flags*/
 
@@ -817,6 +1011,10 @@ void* duk_opt_heapptr (duk_context* ctx, duk_idx_t idx, void* def_value);
  *  is incorrect.  No defaulting.
  */
 
+void duk_require_type_mask(duk_context *ctx, duk_idx_t index, duk_uint_t mask) {
+    duk_check_type_mask(ctx, index, mask | DUK_TYPE_MASK_THROW);
+}
+
 void duk_require_undefined (duk_context* ctx, duk_idx_t idx);
 void duk_require_null (duk_context* ctx, duk_idx_t idx);
 duk_bool_t duk_require_boolean (duk_context* ctx, duk_idx_t idx);
@@ -836,6 +1034,16 @@ alias duk_require_callable = duk_require_function;
 void* duk_require_heapptr (duk_context* ctx, duk_idx_t idx);
 
 /* Symbols are object coercible and covered by DUK_TYPE_MASK_STRING. */
+void duk_require_object_coercible(duk_context *ctx, duk_idx_t index) {
+    duk_check_type_mask(ctx, index, DUK_TYPE_MASK_BOOLEAN |
+                                    DUK_TYPE_MASK_NUMBER |
+                                    DUK_TYPE_MASK_STRING |
+                                    DUK_TYPE_MASK_OBJECT |
+                                    DUK_TYPE_MASK_BUFFER |
+                                    DUK_TYPE_MASK_POINTER |
+                                    DUK_TYPE_MASK_LIGHTFUNC |
+                                    DUK_TYPE_MASK_THROW);
+}
 
 /*
  *  Coercion operations: in-place coercion, return coerced value where
@@ -884,7 +1092,7 @@ const(char)* duk_safe_to_lstring (duk_context* ctx, duk_idx_t idx, duk_size_t* o
 
 extern (D) auto duk_safe_to_string(T0, T1)(auto ref T0 ctx, auto ref T1 idx)
 {
-    return duk_safe_to_lstring(ctx, idx, NULL);
+    return duk_safe_to_lstring(ctx, idx, null);
 }
 
 /*
@@ -1117,93 +1325,93 @@ duk_int_t duk_compile_raw (duk_context* ctx, const(char)* src_buffer, duk_size_t
 
 /* plain */
 void duk_eval(duk_context *ctx) {
-    duk_eval_raw(ctx, null, 0, 2 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOFILENAME);
+    duk_eval_raw(ctx, null, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_eval_noresult(duk_context *ctx) {
-    duk_eval_raw(ctx, null, 0, 2 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
+    duk_eval_raw(ctx, null, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_peval(duk_context *ctx) {
-    return duk_eval_raw(ctx, null, 0, 2 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOFILENAME);
+    return duk_eval_raw(ctx, null, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_peval_noresult(duk_context *ctx) {
-    return duk_eval_raw(ctx, null, 0, 2 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
+    return duk_eval_raw(ctx, null, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_compile(duk_context *ctx, duk_uint_t flags) {
-    duk_compile_raw(ctx, null, 0, 3 /*args*/ | flags);
+    duk_compile_raw(ctx, null, 0, 2 /*args*/ | flags);
 }
 
 duk_int_t duk_pcompile(duk_context *ctx, duk_uint_t flags) {
-    return duk_compile_raw(ctx, null, 0, 3 /*args*/ | flags | DUK_COMPILE_SAFE);
+    return duk_compile_raw(ctx, null, 0, 2 /*args*/ | flags | DUK_COMPILE_SAFE);
 }
 
 /* string */
 void duk_eval_string(duk_context *ctx, const char *src) {
-    duk_eval_raw(ctx, src, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
+    duk_eval_raw(ctx, src, 0, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_eval_string_noresult(duk_context *ctx, const char *src) {
-    duk_eval_raw(ctx, src, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
+    duk_eval_raw(ctx, src, 0, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_peval_string(duk_context *ctx, const char *src) {
-    return duk_eval_raw(ctx, src, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
+    return duk_eval_raw(ctx, src, 0, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_peval_string_noresult(duk_context *ctx, const char *src) {
-    return duk_eval_raw(ctx, src, 0, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
+    return duk_eval_raw(ctx, src, 0, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_compile_string(duk_context *ctx, duk_uint_t flags, const char *src) {
-    duk_compile_raw(ctx, src, 0, 1 /*args*/ | flags | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
+    duk_compile_raw(ctx, src, 0, 0 /*args*/ | flags | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_compile_string_filename(duk_context *ctx, duk_uint_t flags, const char *src) {
-    duk_compile_raw(ctx, src, 0, 2 /*args*/ | flags | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN);
+    duk_compile_raw(ctx, src, 0, 1 /*args*/ | flags | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN);
 }
 
 duk_int_t duk_pcompile_string(duk_context *ctx, duk_uint_t flags, const char *src) {
-    return duk_compile_raw(ctx, src, 0, 1 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
+    return duk_compile_raw(ctx, src, 0, 0 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_pcompile_string_filename(duk_context *ctx, duk_uint_t flags, const char *src) {
-    return duk_compile_raw(ctx, src, 0, 2 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN);
+    return duk_compile_raw(ctx, src, 0, 1 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_STRLEN);
 }
 
 /* lstring */
 void duk_eval_lstring(duk_context *ctx, const char *buf, duk_size_t len)  {
-    duk_eval_raw(ctx, buf, len, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME);
+    duk_eval_raw(ctx, buf, len, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_eval_lstring_noresult(duk_context *ctx, const char *buf, duk_size_t len)  {
-    duk_eval_raw(ctx, buf, len, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
+    duk_eval_raw(ctx, buf, len, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_peval_lstring(duk_context *ctx, const char *buf, duk_size_t len)  {
-    return duk_eval_raw(ctx, buf, len, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_SAFE | DUK_COMPILE_NOFILENAME);
+    return duk_eval_raw(ctx, buf, len, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_NOSOURCE | DUK_COMPILE_SAFE | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_peval_lstring_noresult(duk_context *ctx, const char *buf, duk_size_t len)  {
-    return duk_eval_raw(ctx, buf, len, 1 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
+    return duk_eval_raw(ctx, buf, len, 0 /*args*/ | DUK_COMPILE_EVAL | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NORESULT | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_compile_lstring(duk_context *ctx, duk_uint_t flags, const char *buf, duk_size_t len)  {
-    duk_compile_raw(ctx, buf, len, 1 /*args*/ | flags | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME);
+    duk_compile_raw(ctx, buf, len, 0 /*args*/ | flags | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME);
 }
 
 void duk_compile_lstring_filename(duk_context *ctx, duk_uint_t flags, const char *buf, duk_size_t len)  {
-    duk_compile_raw(ctx, buf, len, 2 /*args*/ | flags | DUK_COMPILE_NOSOURCE);
+    duk_compile_raw(ctx, buf, len, 1 /*args*/ | flags | DUK_COMPILE_NOSOURCE);
 }
 
 duk_int_t duk_pcompile_lstring(duk_context *ctx, duk_uint_t flags, const char *buf, duk_size_t len)  {
-    return duk_compile_raw(ctx, buf, len, 1 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME);
+    return duk_compile_raw(ctx, buf, len, 0 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE | DUK_COMPILE_NOFILENAME);
 }
 
 duk_int_t duk_pcompile_lstring_filename(duk_context *ctx, duk_uint_t flags, const char *buf, duk_size_t len)  {
-    return duk_compile_raw(ctx, buf, len, 2 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE);
+    return duk_compile_raw(ctx, buf, len, 1 /*args*/ | flags | DUK_COMPILE_SAFE | DUK_COMPILE_NOSOURCE);
 }
 
 
