@@ -13,7 +13,7 @@ To run uppercase example:
 dub run duktape:uppercase -- "this is a test"
 ```
 
-On Windows you should add --arch=x86_mscoff for 32-bit builds or --arch=x86_64 for 64-bit builds because the included binary files are in COFF format.
+On Windows you should add --arch=x86_mscoff for 32-bit builds or --arch=x86_64 for 64-bit builds because the included binary files are in MS-COFF format.
 
 ```
 dub run --arch=x86_64 duktape:uppercase -- "this is a test"
